@@ -58,7 +58,7 @@ export const constantRoutes = [
         path: 'dashboard',
         component: () => import('@/views/dashboard/index.vue'),
         name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        meta: { title: '仪表盘', icon: 'dashboard', affix: true }
       }
     ]
   },
@@ -79,39 +79,39 @@ export const constantRoutes = [
  * name：外层路由name必填，退出登录的时候要根据 name 清除动态添加的路由信息，内层的 name 用于页面缓存使用
  */
 export const asyncRoutes = [
-  {
-    path: '/clipboard',
-    component: Layout,
-    name: 'Clipboard',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/clipboard/index.vue'),
-        name: 'ClipboardIndex',
-        meta: {
-          title: 'Clipboard',
-          icon: 'icon'
-        }
-      }
-    ]
-  },
-  {
-    path: '/markdown',
-    component: Layout,
-    name: 'Markdown',
-    redirect: '/markdown/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/markdown/index.vue'),
-        name: 'MarkdownIndex',
-        meta: {
-          title: 'Markdown',
-          icon: 'icon'
-        }
-      }
-    ]
-  },
+  // {
+  //   path: '/clipboard',
+  //   component: Layout,
+  //   name: 'Clipboard',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/clipboard/index.vue'),
+  //       name: 'ClipboardIndex',
+  //       meta: {
+  //         title: 'Clipboard',
+  //         icon: 'icon'
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/markdown',
+  //   component: Layout,
+  //   name: 'Markdown',
+  //   redirect: '/markdown/index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/markdown/index.vue'),
+  //       name: 'MarkdownIndex',
+  //       meta: {
+  //         title: 'Markdown',
+  //         icon: 'icon'
+  //       }
+  //     }
+  //   ]
+  // },
   {
     path: '/system',
     component: Layout,
@@ -150,99 +150,99 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/excel',
-    component: Layout,
-    name: 'Excel',
-    redirect: '/excel/export-excel',
-    meta: {
-      title: 'Excel',
-      icon: 'icon'
-    },
-    children: [
-      {
-        path: 'export-excel',
-        component: () => import('@/views/excel/export-excel.vue'),
-        name: 'ExportExcel',
-        meta: {
-          title: 'Export Excel'
-        }
-      },
-      {
-        path: 'export-selected-excel',
-        component: () => import('@/views/excel/select-excel.vue'),
-        name: 'SelectExcel',
-        meta: { title: 'Export Selected' }
-      },
-      {
-        path: 'merge-header',
-        component: () => import('@/views/excel/merge-header.vue'),
-        name: 'MergeHeader',
-        meta: { title: 'Merge Header' }
-      },
-      {
-        path: 'upload-excel',
-        component: () => import('@/views/excel/upload-excel.vue'),
-        name: 'UploadExcel',
-        meta: { title: 'Upload Excel' }
-      }
-    ]
-  },
-  {
-    path: '/dom-to-image',
-    name: 'DomToImage',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/dom-to-image/index.vue'),
-        name: 'DomToImageIndex',
-        meta: {
-          title: 'DomToImage',
-          icon: 'icon'
-        }
-      }
-    ]
-  },
-  {
-    path: '/permission',
-    name: 'Permission',
-    component: Layout,
-    redirect: '/permission/role',
-    children: [
-      {
-        path: 'role',
-        component: () => import('@/views/permission/role'),
-        name: 'PermissionRole',
-        meta: { title: 'Permission', icon: 'icon' }
-      }
-    ]
-  },
-  {
-    path: '/qrcode',
-    name: 'Qrcode',
-    component: Layout,
-    redirect: '/qrcode/index',
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/qrcode/index'),
-        name: 'QrcodeIndex',
-        meta: { title: 'Qrcode', icon: 'icon' }
-      }
-    ]
-  },
-  {
-    path: '/external-link',
-    component: Layout,
-    name: 'ExternalLink',
-    children: [
-      {
-        path: 'https://github.com/zhihuifanqiechaodan/vue3-admin-template',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  }
+  // {
+  //   path: '/excel',
+  //   component: Layout,
+  //   name: 'Excel',
+  //   redirect: '/excel/export-excel',
+  //   meta: {
+  //     title: 'Excel',
+  //     icon: 'icon'
+  //   },
+  //   children: [
+  //     {
+  //       path: 'export-excel',
+  //       component: () => import('@/views/excel/export-excel.vue'),
+  //       name: 'ExportExcel',
+  //       meta: {
+  //         title: 'Export Excel'
+  //       }
+  //     },
+  //     {
+  //       path: 'export-selected-excel',
+  //       component: () => import('@/views/excel/select-excel.vue'),
+  //       name: 'SelectExcel',
+  //       meta: { title: 'Export Selected' }
+  //     },
+  //     {
+  //       path: 'merge-header',
+  //       component: () => import('@/views/excel/merge-header.vue'),
+  //       name: 'MergeHeader',
+  //       meta: { title: 'Merge Header' }
+  //     },
+  //     {
+  //       path: 'upload-excel',
+  //       component: () => import('@/views/excel/upload-excel.vue'),
+  //       name: 'UploadExcel',
+  //       meta: { title: 'Upload Excel' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/dom-to-image',
+  //   name: 'DomToImage',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/dom-to-image/index.vue'),
+  //       name: 'DomToImageIndex',
+  //       meta: {
+  //         title: 'DomToImage',
+  //         icon: 'icon'
+  //       }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/permission',
+  //   name: 'Permission',
+  //   component: Layout,
+  //   redirect: '/permission/role',
+  //   children: [
+  //     {
+  //       path: 'role',
+  //       component: () => import('@/views/permission/role'),
+  //       name: 'PermissionRole',
+  //       meta: { title: 'Permission', icon: 'icon' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/qrcode',
+  //   name: 'Qrcode',
+  //   component: Layout,
+  //   redirect: '/qrcode/index',
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/qrcode/index'),
+  //       name: 'QrcodeIndex',
+  //       meta: { title: 'Qrcode', icon: 'icon' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/external-link',
+  //   component: Layout,
+  //   name: 'ExternalLink',
+  //   children: [
+  //     {
+  //       path: 'https://github.com/zhihuifanqiechaodan/vue3-admin-template',
+  //       meta: { title: 'External Link', icon: 'link' }
+  //     }
+  //   ]
+  // }
 ]
 
 const router = createRouter({
