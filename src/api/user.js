@@ -7,7 +7,7 @@ import { request } from '@/utils/request'
  */
 export function addUserLogin(data) {
   return request({
-    url: '/login',
+    url: '/api/login',
     method: 'post',
     data
   })
@@ -20,7 +20,7 @@ export function addUserLogin(data) {
  */
 export function addUserInfo(data) {
   return request({
-    url: '/userInfo',
+    url: '/api/userInfo',
     method: 'get',
     data
   })

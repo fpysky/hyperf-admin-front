@@ -116,7 +116,10 @@ export const asyncRoutes = [
     path: '/system',
     component: Layout,
     name: 'system',
-    // redirect: '/system/index',
+    meta: {
+      title: '系统管理',
+      icon: 'menu'
+    },
     children: [
       {
         path: 'admin',
@@ -124,7 +127,7 @@ export const asyncRoutes = [
         name: 'admin',
         meta: {
           title: '管理员管理',
-          icon: 'icon'
+          icon: 'userFilled'
         }
       },
       {
@@ -133,7 +136,7 @@ export const asyncRoutes = [
         name: 'role',
         meta: {
           title: '角色管理',
-          icon: 'icon'
+          icon: 'userFilled'
         }
       },
       {

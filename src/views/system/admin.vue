@@ -1,171 +1,89 @@
 <template>
-    <div class="role-container">
-      <el-button @click="handleAddRole" type="primary">New Role</el-button>
-      <el-table :data="roleList" border>
-        <el-table-column prop="name" label="Name" align="center" />
-        <el-table-column prop="description" label="Description" align="center" />
-        <el-table-column fixed="right" label="Operations" align="center">
-          <template #default="scoped">
-            <el-button @click="handleEdit(scoped)" type="primary">Edit</el-button>
-            <el-button @click="handleDelete(scoped)" type="danger"
-              >Delete</el-button
-            >
-          </template>
-        </el-table-column>
-      </el-table>
-      <permission-dialog
-        ref="permissionDialogRef"
-        v-model:dialogVisible="permissionDialogVisible"
-        :routesData="routesData"
-        :roleInfo="roleInfo"
-        :dialogType="dialogType"
-      />
-    </div>
-  </template>
+  <div class="toolbar">
+    <el-input v-model="searchData.keyword" size="small" style="width: 200px;" placeholder="搜索管理员"/>
+    <el-button type="primary" style="margin-left: 10px;" size="small">
+    <el-icon size="small" style="vertical-align: middle;">
+      <Search />
+    </el-icon>
+    <span style="vertical-align: middle" @click="getData()"> 搜索 </span>
+  </el-button>
+  </div>
+  <div class="content">
+    <el-table :data="tableData" style="width: 100%;margin-bottom: 20px;">
+      <el-table-column prop="id" label="ID" width="180" />
+      <el-table-column prop="name" label="名称" width="180" />
+      <el-table-column prop="status" label="状态" width="180" />
+      <el-table-column prop="type" label="类型" width="180" />
+      <el-table-column prop="mobile" label="手机号" width="180" />
+      <el-table-column prop="email" label="电子邮箱" width="180" />
+      <el-table-column prop="lastLoginIp" label="最后登录IP" width="180" />
+      <el-table-column prop="logo" label="logo" width="180" />
+      <el-table-column prop="lastLoginTime" label="最后登录时间" width="180" />
+      <el-table-column prop="createdAt" label="创建时间" width="180" />
+      <el-table-column prop="updatedAt" label="更新时间" width="180" />
+    </el-table>
+  <div style="width:100%;">
+    <el-pagination style="margin-left: 20px;" background layout="prev, pager, next" :total="total" />
+  </div>
+  </div>
+</template>
   
-  <script setup name="PermissionRole">
-  import { reactive, onMounted, toRefs, computed, nextTick } from 'vue'
-  import { asyncRoutes } from '@/router/index'
-  import path from 'path-browserify'
-  import PermissionDialog from './components/permission-dialog.vue'
-  import { cloneDeep as _cloneDeep } from 'lodash'
-  import { ElMessageBox } from 'element-plus'
-  
-  const state = reactive({
-    routes: [],
-    roleList: [],
-    permissionDialogVisible: false,
-    dialogType: 'edit',
-    roleInfo: {
-      name: '',
-      description: '',
-      routes: []
-    },
-    permissionDialogRef: null
+<script setup>
+import { adminList } from '@/api/admin'
+import { onMounted,reactive,toRefs } from 'vue'
+
+const state = reactive({
+  searchData: {
+    keyword:""
+  },
+  tableData: [],
+  total: 0,
+  page: 1,
+  pageSize: 15,
+})
+
+let {
+  searchData,
+  tableData,
+  total,
+} = toRefs(state)
+
+const getData = () => {
+  adminList({
+    page:state.page,
+    pageSize:state.pageSize,
+  }).then(resp => {
+    const {data} = resp
+    state.tableData = data.list
+    state.total = data.total
   })
-  
-  const {
-    roleList,
-    permissionDialogVisible,
-    permissionDialogRef,
-    roleInfo,
-    dialogType
-  } = toRefs(state)
-  
-  onMounted(() => {
-    state.routes = generateRoutes(_cloneDeep(asyncRoutes))
-    state.roleList.push({
-      name: 'admin',
-      description: '超级管理员，拥有所有的页面权限',
-      routes: _cloneDeep(asyncRoutes)
-    })
-  })
-  
-  const routesData = computed(() => state.routes)
-  
-  const generateRoutes = (routes, basePath = '/') => {
-    const res = []
-  
-    for (let route of routes) {
-      // skip some route
-      if (route.hidden) {
-        continue
-      }
-      const _onlyOneShowingChild = onlyOneShowingChild(route.children, route)
-      if (route.children && _onlyOneShowingChild && !route.alwaysShow) {
-        route = _onlyOneShowingChild
-      }
-  
-      const data = {
-        path: path.resolve(basePath, route.path),
-        title: route.meta && route.meta.title
-      }
-  
-      // recursive child routes
-      if (route.children) {
-        data.children = generateRoutes(route.children, data.path)
-      }
-      res.push(data)
-    }
-    return res
-  }
-  
-  const generateArr = (routes) => {
-    let data = []
-    routes.forEach((route) => {
-      data.push(route)
-      if (route.children) {
-        const temp = generateArr(route.children)
-        if (temp.length > 0) {
-          data = [...data, ...temp]
-        }
-      }
-    })
-    return data
-  }
-  
-  const onlyOneShowingChild = (children = [], parent) => {
-    let onlyOneChild = null
-    const showingChildren = children.filter((item) => !item.hidden)
-  
-    // When there is only one child route, the child route is displayed by default
-    if (showingChildren.length === 1) {
-      onlyOneChild = showingChildren[0]
-      onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
-      return onlyOneChild
-    }
-  
-    // Show parent if there are no child route to display
-    if (showingChildren.length === 0) {
-      onlyOneChild = { ...parent, path: '', noShowingChildren: true }
-      return onlyOneChild
-    }
-  
-    return false
-  }
-  
-  const handleAddRole = () => {
-    state.dialogType = 'new'
-    state.roleInfo = {
-      name: '',
-      description: '',
-      routes: []
-    }
-    state.permissionDialogVisible = true
-  }
-  
-  const handleEdit = ({ row }) => {
-    state.dialogType = 'edit'
-    state.roleInfo = _cloneDeep(row)
-    state.permissionDialogVisible = true
-    nextTick(() => {
-      const routes = generateRoutes(state.roleInfo.routes)
-      state.permissionDialogRef.treeRef.setCheckedNodes(generateArr(routes))
-    })
-  }
-  
-  const handleDelete = ({ $index }) => {
-    ElMessageBox.confirm(
-      'proxy will permanently delete the file. Continue?',
-      'Warning',
-      {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      }
-    )
-      .then(() => {
-        state.roleList.splice($index, 1)
-      })
-      .catch(() => {})
-  }
-  </script>
+}
+
+onMounted(() => {
+  getData()
+})
+
+</script>
   
   <style lang="scss" scoped>
   .role-container {
     margin: 20px;
     padding: 20px;
     background-color: #fff;
+  }
+
+  .toolbar{
+    padding: 10px;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+
+  .content{
+    width: 100%;
+    background-color: #fff;
+    margin-top: 20px;
+    padding:10px 0;
   }
   </style>
   

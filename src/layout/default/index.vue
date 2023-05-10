@@ -36,10 +36,10 @@ const menuWidth = computed(() =>
   .sidebar {
     z-index: 1001;
     position: fixed;
-    top: 20px;
+    top: 0;
     bottom: 0;
-    left: 20px;
-    height: calc(100vh - 40px);
+    left: 0;
+    height: 100%;
     overflow: hidden;
     transition: width 0.28s;
     font-size: 0;
