@@ -52,7 +52,7 @@
         size="large"
         style="width: 100%; margin-bottom: 30px"
         @click.prevent="handleLogin"
-        >Login</el-button
+        >登录</el-button
       >
     </el-form>
   </div>

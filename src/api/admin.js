@@ -7,3 +7,11 @@ export function adminList(data) {
     params:data
   })
 }
+
+export function createAdmin(data) {
+  return request({
+    url: '/api/admin',
+    method: 'post',
+    data
+  })
+}
