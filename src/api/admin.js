@@ -23,3 +23,19 @@ export function editAdmin(data) {
     data
   })
 }
+
+export function upAdminStatus(data) {
+  return request({
+    url: '/api/admin/status',
+    method: 'patch',
+    data
+  })
+}
+
+export function deleteAdmin(data) {
+  return request({
+    url: '/api/admin',
+    method: 'delete',
+    data
+  })
+}

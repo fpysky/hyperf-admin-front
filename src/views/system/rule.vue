@@ -7,9 +7,15 @@
         </el-icon>
         <span style="vertical-align: middle">添加</span>
       </el-button>
+      <el-button type="primary" size="small" :loading="state.tableLoading" style="margin-right: 10px;" @click="getData">
+        <el-icon size="small" style="vertical-align: middle;">
+          <Refresh />
+        </el-icon>
+        <span style="vertical-align: middle">刷新</span>
+      </el-button>
     </div>
     <div class="content">
-      <el-table :data="state.tableData" v-loading="state.tableLoading" style="width: 100%;margin-bottom: 20px;">
+      <el-table :data="state.tableData" row-key="id" v-loading="state.tableLoading" style="width: 100%;margin-bottom: 20px;">
         <el-table-column prop="id" label="ID" width="180" />
         <el-table-column prop="name" label="名称" width="180" />
         <el-table-column prop="status" label="状态" width="180">
@@ -20,9 +26,14 @@
           </template>
         </el-table-column>
         <el-table-column prop="sort" label="排序" width="180" />
-        <el-table-column prop="desc" label="描述" width="180" />
-        <el-table-column prop="createdAt" label="创建时间" width="180" />
-        <el-table-column prop="updatedAt" label="更新时间" width="180" />
+        <el-table-column prop="type" label="类型" width="180">
+          <template #default="scope">
+            <el-tag v-if="scope.row.type == 1" type="success">{{ scope.row.typeZh }}</el-tag>
+            <el-tag v-if="scope.row.type == 2" type="info">{{ scope.row.typeZh }}</el-tag>
+            <el-tag v-if="scope.row.type == 3" type="warning">{{ scope.row.typeZh }}</el-tag>
+            <el-tag v-if="scope.row.type == 4" type="danger">{{ scope.row.typeZh }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <el-button size="small" @click="openCreateOrUpdate(scope.$index)">编辑</el-button>
@@ -30,9 +41,6 @@
           </template>
         </el-table-column>
       </el-table>
-      <div style="width:100%;">
-        <el-pagination style="margin-left: 20px;" background layout="prev, pager, next" :total="state.total" />
-      </div>
       <el-dialog style="text-align: center;" v-model="state.formDialogVisible" :title="state.isEdit ? '编辑角色' : '新增角色'"
         width="30%">
         <el-form ref="ruleFormRef" style="width:80%;margin: 0 auto;" :model="state.roleForm" :rules="state.rules"
@@ -63,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-import { roleList, upRoleStatus,editRole,createRole } from '@/api/role'
+import { ruleList } from '@/api/rule'
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
 
@@ -131,12 +139,8 @@ const adminSubmit = async () => {
 
 const getData = () => {
   state.tableLoading = true
-  roleList({
-    page: state.page,
-    pageSize: state.pageSize,
-  }).then(resp => {
-    state.tableData = resp.data.list
-    state.total = resp.data.total
+  ruleList().then(resp => {
+    state.tableData = resp.data
   }).finally(() => {
     state.tableLoading = false
   })

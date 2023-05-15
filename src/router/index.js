@@ -140,9 +140,9 @@ export const asyncRoutes = [
         }
       },
       {
-        path: 'permission',
-        component: () => import('@/views/system/permission.vue'),
-        name: 'permission',
+        path: 'rule',
+        component: () => import('@/views/system/rule.vue'),
+        name: 'rule',
         meta: {
           title: '权限管理',
           icon: 'icon'

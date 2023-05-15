@@ -26,8 +26,9 @@
         <el-table-column prop="name" label="名称" width="180" />
         <el-table-column prop="status" label="状态" width="180">
           <template #default="scope">
-            <el-switch v-model="scope.row.status" style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-              :active-value="1" :inactive-value="0" />
+            <el-switch @change="(val) => handleAdminStatusChage(val, scope.row.id)" v-model="scope.row.status"
+              style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" :active-value="1"
+              :inactive-value="0" />
           </template>
         </el-table-column>
         <el-table-column prop="type" label="类型" width="180" />
@@ -41,17 +42,17 @@
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <el-button size="small" @click="openCreateOrUpdate(scope.$index)">编辑</el-button>
-            <el-button size="small" type="danger">删除</el-button>
+            <el-button size="small" type="danger" @click="handleDeleteAdmin([scope.row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div style="width:100%;">
         <el-pagination style="margin-left: 20px;" background layout="prev, pager, next" :total="state.total" />
       </div>
-      <el-dialog  style="text-align: center;" v-model="state.formDialogVisible" :title="state.isEdit ? '编辑管理员' : '新增管理员'"
+      <el-dialog style="text-align: center;" v-model="state.formDialogVisible" :title="state.isEdit ? '编辑管理员' : '新增管理员'"
         width="30%">
-        <el-form :loading="state.formDialogLoading" ref="ruleFormRef" style="width:80%;margin: 0 auto;" :model="state.adminForm" :rules="state.rules"
-          label-width="83px">
+        <el-form :loading="state.formDialogLoading" ref="ruleFormRef" style="width:80%;margin: 0 auto;"
+          :model="state.adminForm" :rules="state.rules" label-width="83px">
           <el-form-item required label="姓名:" prop="name">
             <el-input v-model="state.adminForm.name" />
           </el-form-item>
@@ -93,11 +94,12 @@
 </template>
 
 <script lang="ts" setup>
-import { adminList, createAdmin, editAdmin } from '@/api/admin'
+import { adminList, createAdmin, editAdmin, upAdminStatus, deleteAdmin } from '@/api/admin'
 import { getRoleSelectData } from '@/api/role'
 import { getDeptTree } from '@/api/dept'
 import { onMounted, reactive, ref } from 'vue'
 import type { FormInstance, FormRules, ElTree } from 'element-plus'
+import { ElMessageBox } from 'element-plus'
 
 interface AdminForm {
   id: number,
@@ -126,7 +128,7 @@ const state = reactive({
   pageSize: 15,
   tableLoading: false,
   formDialogVisible: false,
-  formDialogLoading:false,
+  formDialogLoading: false,
   submitLoading: false,
   deptTreeLoading: false,
   isEdit: false,
@@ -172,6 +174,27 @@ const state = reactive({
     ],
   }
 })
+
+const handleDeleteAdmin = (ids: Array<number>) => {
+  ElMessageBox.confirm(
+    '你确定要删除吗?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      deleteAdmin({ids:ids}).then(() => {
+        getData()
+      })
+    })
+}
+
+const handleAdminStatusChage = (val, id) => {
+  upAdminStatus({ ids: [id], status: val })
+}
 
 const adminSubmit = async () => {
   if (ruleFormRef.value) {
