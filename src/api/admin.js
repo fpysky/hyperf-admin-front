@@ -15,3 +15,11 @@ export function createAdmin(data) {
     data
   })
 }
+
+export function editAdmin(data) {
+  return request({
+    url: '/api/admin',
+    method: 'put',
+    data
+  })
+}

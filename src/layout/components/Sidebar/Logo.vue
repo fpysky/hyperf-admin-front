@@ -77,7 +77,7 @@ defineProps({
       color: #fff;
       font-weight: 600;
       line-height: 50px;
-      font-size: 12px;
+      font-size: 16px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
     }

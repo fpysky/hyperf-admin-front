@@ -1,7 +1,9 @@
 <template>
-  <el-config-provider :size="size" :z-index="zIndex">
-    <router-view></router-view>
-  </el-config-provider>
+  <div>
+    <el-config-provider :size="size" :z-index="zIndex">
+      <router-view></router-view>
+    </el-config-provider>
+  </div>
 </template>
 
 <script setup>
