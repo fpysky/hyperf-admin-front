@@ -195,6 +195,7 @@ $dark_gray: #889aa4;
 $light_gray: #eee;
 
 .login-container {
+  height: 100vh;
   min-height: 100%;
   width: 100%;
   background-color: $bg;

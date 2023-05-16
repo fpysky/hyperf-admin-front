@@ -38,3 +38,11 @@ export function editRole(data) {
     data
   })
 }
+
+export function deleteRole(data) {
+  return request({
+    url: '/api/role',
+    method: 'delete',
+    data
+  })
+}

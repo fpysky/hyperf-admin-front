@@ -7,6 +7,12 @@
         </el-icon>
         <span style="vertical-align: middle">添加</span>
       </el-button>
+      <el-button type="primary" size="small" :loading="state.tableLoading" style="margin-right: 10px;" @click="getData">
+        <el-icon size="small" style="vertical-align: middle;">
+          <Refresh />
+        </el-icon>
+        <span style="vertical-align: middle">刷新</span>
+      </el-button>
     </div>
     <div class="content">
       <el-table :data="state.tableData" v-loading="state.tableLoading" style="width: 100%;margin-bottom: 20px;">
@@ -26,7 +32,7 @@
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <el-button size="small" @click="openCreateOrUpdate(scope.$index)">编辑</el-button>
-            <el-button size="small" type="danger">删除</el-button>
+            <el-button size="small" type="danger" @click="handleDelete([scope.row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -63,9 +69,9 @@
 </template>
 
 <script lang="ts" setup>
-import { roleList, upRoleStatus,editRole,createRole } from '@/api/role'
+import { roleList, upRoleStatus,editRole,createRole,deleteRole } from '@/api/role'
 import { onMounted, reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
+import { ElMessageBox, FormInstance, FormRules } from 'element-plus'
 
 interface RoleForm {
   id: number,
@@ -100,6 +106,23 @@ const state = reactive({
   }
 })
 
+const handleDelete = (ids: Array<number>) => {
+  ElMessageBox.confirm(
+    '你确定要删除吗?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      deleteRole({ids:ids}).then(() => {
+        getData()
+      })
+    })
+}
+
 const handleRoleStatusChage = (val, id) => {
   upRoleStatus({ ids: [id], status: val })
 }
@@ -112,16 +135,16 @@ const adminSubmit = async () => {
         if (state.isEdit) {
           editRole(state.roleForm).then(() => {
             state.formDialogVisible = false
+            getData()
           }).finally(() => {
             state.submitLoading = false
-            getData()
           })
         } else {
           createRole(state.roleForm).then(() => {
             state.formDialogVisible = false
+            getData()
           }).finally(() => {
             state.submitLoading = false
-            getData()
           })
         }
       }

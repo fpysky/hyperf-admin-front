@@ -42,7 +42,7 @@
         <el-table-column label="操作" width="200">
           <template #default="scope">
             <el-button size="small" @click="openCreateOrUpdate(scope.$index)">编辑</el-button>
-            <el-button size="small" type="danger" @click="handleDeleteAdmin([scope.row.id])">删除</el-button>
+            <el-button size="small" type="danger" @click="handleDelete([scope.row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -175,7 +175,7 @@ const state = reactive({
   }
 })
 
-const handleDeleteAdmin = (ids: Array<number>) => {
+const handleDelete = (ids: Array<number>) => {
   ElMessageBox.confirm(
     '你确定要删除吗?',
     '提示',
@@ -204,16 +204,16 @@ const adminSubmit = async () => {
         if (state.isEdit) {
           editAdmin(state.adminForm).then(() => {
             state.formDialogVisible = false
+            getData()
           }).finally(() => {
             state.submitLoading = false
-            getData()
           })
         } else {
           createAdmin(state.adminForm).then(() => {
             state.formDialogVisible = false
+            getData()
           }).finally(() => {
             state.submitLoading = false
-            getData()
           })
         }
       }
