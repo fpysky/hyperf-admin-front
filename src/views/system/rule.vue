@@ -28,6 +28,8 @@
               :inactive-value="0" />
           </template>
         </el-table-column>
+        <el-table-column prop="route" label="后端路由" width="180" />
+        <el-table-column prop="path" label="前端路由" width="180" />
         <el-table-column prop="sort" label="排序" width="180" />
         <el-table-column prop="type" label="类型" width="180">
           <template #default="scope">
@@ -39,22 +41,22 @@
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template #default="scope">
-            <el-button size="small" @click="openCreateOrUpdate(scope.$index)">编辑</el-button>
+            <el-button size="small" @click="openCreateOrUpdate(scope.row.id)">编辑</el-button>
             <el-button size="small" type="danger" @click="handleDelete([scope.row.id])">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
       <el-dialog style="text-align: center;" v-model="state.formDialogVisible" :title="state.isEdit ? '编辑权限' : '新增权限'"
         width="30%">
-        <el-tabs v-model="state.formActiveName" type="card" class="demo-tabs" @tab-click="handleFormTabsClick">
-          <el-tab-pane label="目录权限" name="directory">
+        <el-tabs v-model="state.formActiveName" type="card" @tab-click="handleFormTabsClick">
+          <el-tab-pane :disabled="state.directoryTabDisabled" label="目录权限" name="directory">
             <el-form ref="ruleFormRefDirectory" style="width:80%;margin: 0 auto;" :model="state.ruleForm"
               :rules="state.rules" label-width="83px">
               <el-form-item required label="名称:" prop="name">
                 <el-input v-model="state.ruleForm.name" />
               </el-form-item>
-              <el-form-item label="前端路由:" prop="route">
-                <el-input v-model="state.ruleForm.route" />
+              <el-form-item label="前端路由:" prop="path">
+                <el-input v-model="state.ruleForm.path" />
               </el-form-item>
               <el-form-item label="图标:" prop="icon">
                 <el-input v-model="state.ruleForm.icon" />
@@ -74,7 +76,7 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="菜单权限" name="menu">
+          <el-tab-pane :disabled="state.menuTabDisabled" label="菜单权限" name="menu">
             <el-form ref="ruleFormRefMenu" style="width:80%;margin: 0 auto;" :model="state.ruleForm" :rules="state.rules"
               label-width="83px">
               <el-form-item required label="父级:" prop="parentId">
@@ -85,11 +87,8 @@
               <el-form-item required label="名称:" prop="name">
                 <el-input v-model="state.ruleForm.name" />
               </el-form-item>
-              <el-form-item label="前端路由:" prop="route">
-                <el-input v-model="state.ruleForm.route" />
-              </el-form-item>
-              <el-form-item label="后端路由:" prop="path">
-                <el-input v-model="state.ruleForm.path" placeholder="/method/xx/xx" />
+              <el-form-item label="前端路由:" prop="path">
+                <el-input v-model="state.ruleForm.path" />
               </el-form-item>
               <el-form-item label="图标:" prop="icon">
                 <el-input v-model="state.ruleForm.icon" />
@@ -109,7 +108,7 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="按钮权限" name="button">
+          <el-tab-pane :disabled="state.buttonTabDisabled" label="按钮权限" name="button">
             <el-form ref="ruleFormRefButton" style="width:80%;margin: 0 auto;" :model="state.ruleForm"
               :rules="state.rules" label-width="83px">
               <el-form-item required label="父级:" prop="parentId">
@@ -120,8 +119,8 @@
               <el-form-item required label="名称:" prop="name">
                 <el-input v-model="state.ruleForm.name" />
               </el-form-item>
-              <el-form-item label="后端路由:" prop="path">
-                <el-input v-model="state.ruleForm.path" placeholder="/method/xx/xx" />
+              <el-form-item label="后端路由:" prop="route">
+                <el-input v-model="state.ruleForm.route" placeholder="/method/xx/xx" />
               </el-form-item>
               <el-form-item label="排序:">
                 <el-input v-model="state.ruleForm.sort" />
@@ -138,7 +137,7 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="接口权限" name="api">
+          <el-tab-pane :disabled="state.apiTabDisabled" label="接口权限" name="api">
             <el-form ref="ruleFormRefApi" style="width:80%;margin: 0 auto;" :model="state.ruleForm" :rules="state.rules"
               label-width="83px">
               <el-form-item required label="父级:" prop="parentId">
@@ -149,10 +148,10 @@
               <el-form-item required label="名称:" prop="name">
                 <el-input v-model="state.ruleForm.name" />
               </el-form-item>
-              <el-form-item label="后端路由:" prop="path">
-                <el-input v-model="state.ruleForm.path" placeholder="/method/xx/xx" />
+              <el-form-item label="后端路由:" prop="route">
+                <el-input v-model="state.ruleForm.route" placeholder="/method/xx/xx" />
               </el-form-item>
-              <el-form-item label="排序:">
+              <el-form-item label="排序:" prop="sort">
                 <el-input v-model="state.ruleForm.sort" />
               </el-form-item>
               <el-form-item required label="是否启用:">
@@ -174,7 +173,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ruleList, upRuleStatus, createRule, editRule, topRule, parentMenusTree,deleteRule } from '@/api/rule'
+import { ruleList, upRuleStatus, createRule, editRule, topRule, parentMenusTree, deleteRule } from '@/api/rule'
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessageBox, FormInstance, FormRules, TabsPaneContext } from 'element-plus'
 
@@ -204,10 +203,14 @@ const state = reactive({
   submitLoading: false,
   isEdit: false,
   tableData: [],
-  colorStyle: true,
+  colorStyle: false,
   formActiveName: 'directory',
   topRule: [],
   parentMenusTree: [],
+  directoryTabDisabled: false,
+  menuTabDisabled: false,
+  buttonTabDisabled: false,
+  apiTabDisabled: false,
   ruleForm: <RuleForm>{
     id: 0,
     parentId: '',
@@ -236,20 +239,17 @@ const state = reactive({
 })
 
 const handleDelete = (ids: Array<number>) => {
-  ElMessageBox.confirm(
-    '你确定要删除吗?',
-    '提示',
+  ElMessageBox.confirm('你确定要删除吗?', '提示',
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning',
     }
-  )
-    .then(() => {
-      deleteRule({ids:ids}).then(() => {
-        getData()
-      })
+  ).then(() => {
+    deleteRule({ ids: ids }).then(() => {
+      getData()
     })
+  })
 }
 
 const initingTopRule = () => {
@@ -265,8 +265,14 @@ const initingParentMenusTree = () => {
 }
 
 const handleFormTabsClick = (tab: TabsPaneContext) => {
-  resetForm()
-  switch (tab.paneName) {
+  if (!state.isEdit) {
+    resetForm()
+  }
+  initingTabData(tab.paneName)
+}
+
+const initingTabData = (activeName: string | number | undefined) => {
+  switch (activeName) {
     case 'directory':
       state.ruleForm.type = 1
       break
@@ -351,19 +357,36 @@ const resetForm = async () => {
   ruleFormRefApi.value.resetFields()
 }
 
-const initingAdminForm = async (index: number | undefined) => {
-  if (index !== undefined) {
-    const data = state.tableData[index]
+const findTableData = (data, id: number) => {
+  for (let i = 0; i < data.length; i++) {
+    const item = data[i]
+    if (item.id === id) {
+      return item
+    }
+
+    if (item.children !== undefined) {
+      const result = findTableData(item.children, id)
+      if (result !== undefined) {
+        return result
+      }
+    }
+  }
+
+  return undefined
+}
+
+const initingAdminForm = async (item) => {
+  if (item !== undefined) {
     state.ruleForm = <RuleForm>{
-      id: data.id,
-      parentId: data.parentId,
-      status: data.status,
-      type: data.type,
-      sort: data.sort,
-      name: data.name,
-      icon: data.icon,
-      route: data.route,
-      path: data.path,
+      id: item.id,
+      parentId: item.parentId,
+      status: item.status,
+      type: item.type,
+      sort: item.sort,
+      name: item.name,
+      icon: item.icon,
+      route: item.route,
+      path: item.path,
     }
   } else {
     state.ruleForm = <RuleForm>{
@@ -380,11 +403,54 @@ const initingAdminForm = async (index: number | undefined) => {
   }
 }
 
-const openCreateOrUpdate = async (index: number | undefined) => {
-  state.isEdit = index === undefined ? false : true
+const openCreateOrUpdate = async (id: number | undefined) => {
   state.formDialogVisible = true
-  await initingAdminForm(index)
-  if (index === undefined) await resetForm()
+  state.directoryTabDisabled = false
+  state.menuTabDisabled = false
+  state.buttonTabDisabled = false
+  state.apiTabDisabled = false
+
+  if (id === undefined) {
+    state.isEdit = false
+    await resetForm()
+  } else {
+    state.isEdit = true
+    const item = findTableData(state.tableData, id)
+    initingAdminForm(item)
+    fixTabPersition(item)
+  }
+}
+
+const fixTabPersition = (item) => {
+  let activeName = ''
+  switch (item.type) {
+    case 1:
+      activeName = 'directory'
+      state.menuTabDisabled = true
+      state.buttonTabDisabled = true
+      state.apiTabDisabled = true
+      break
+    case 2:
+      activeName = 'menu'
+      state.directoryTabDisabled = true
+      state.buttonTabDisabled = true
+      state.apiTabDisabled = true
+      break
+    case 3:
+      activeName = 'button'
+      state.directoryTabDisabled = true
+      state.menuTabDisabled = true
+      state.apiTabDisabled = true
+      break
+    case 4:
+      activeName = 'api'
+      state.directoryTabDisabled = true
+      state.menuTabDisabled = true
+      state.buttonTabDisabled = true
+      break
+  }
+  state.formActiveName = activeName
+  initingTabData(activeName)
 }
 
 onMounted(() => {
